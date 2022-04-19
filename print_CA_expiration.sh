@@ -37,6 +37,30 @@ do
 done
 }
 
+if [ -z "$VAULT_TOKEN" ]
+then
+    echo "\$VAULT_TOKEN must be set." >&2
+	exit -1
+fi
+
+if [ -z "$VAULT_ADDR" ]
+then
+    echo "\$VAULT_ADDR must be set." >&2
+	exit -1
+fi
+
+if [ -z jq ]
+then
+    echo "jq must be installed" >&2
+	exit -1
+fi
+
+if [ -z sed ]
+then
+    echo "sed must be installed" >&2
+	exit -1
+fi
+
 root_namespace_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
 	"${VAULT_ADDR}/v1/sys/namespaces/" | jq .data.keys | sed 's/[],[]//g' `) # Get the namespace list under / in a sanitised bash array
 
