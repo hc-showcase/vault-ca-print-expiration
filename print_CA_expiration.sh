@@ -40,7 +40,7 @@ done
 root_namespace_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
 	"${VAULT_ADDR}/v1/sys/namespaces/" | jq .data.keys | sed 's/[],[]//g' `) # Get the namespace list under / in a sanitised bash array
 
-# Root namespaces is weired... threfore handling it separately and not as part of the array
+# Root namespace is weired... threfore handling it separately and not as part of the array
 find_pki_engines "root/"
 
 for ns in "${root_namespace_arr[@]}"
