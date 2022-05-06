@@ -56,3 +56,7 @@ $ bash print_groups.sh | yq
       mount_type: ldap
       policies: null
 ```
+
+# Identity Inventory
+
+This script outputs all Entities and Entity Aliases inside Vault
