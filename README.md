@@ -60,3 +60,16 @@ $ bash print_groups.sh | yq
 # Identity Inventory
 
 This script outputs all Entities and Entity Aliases inside Vault
+
+# Secret Engine Inventory
+
+This script helps to maintain an inventory of all existing engines and engine types in Vault.
+
+```bash
+./print_engines.sh > vault-engines.yaml
+
+```
+To convert the YAML to CSV:
+```yaml
+yq -o csv vault-engines.yaml > vault-engines.csv
+```
