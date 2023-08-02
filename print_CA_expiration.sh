@@ -2,13 +2,13 @@
 #set -x
 
 function find_pki_engines() {
-pki_engines=$(curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+pki_engines=$(curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
     --header "X-Vault-Namespace: ${1}" \
     ${VAULT_ADDR}/v1/sys/mounts | \
     jq -r '.data | to_entries[] | select(.value.type=="pki").key')
 
 for engine in $pki_engines; do
-    result=$(curl -s --header "X-Vault-Namespace: ${1}" \
+    result=$(curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Namespace: ${1}" \
 	    ${VAULT_ADDR}/v1/${engine}ca/pem)
 
     if [[ "$result" == '' ]]; then
@@ -22,7 +22,7 @@ done
 function go_one_ns_deeper() {
 for ns in "$1"
 do
-    namespaces_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+    namespaces_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
 	--header "X-Vault-Namespace: ${2}" -X LIST \
 	"${VAULT_ADDR}/v1/sys/namespaces/" | \
 	jq -r '.data.keys' | sed 's/[],[]//g'` )
@@ -61,7 +61,7 @@ then
 	exit -1
 fi
 
-root_namespace_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
+root_namespace_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
 	"${VAULT_ADDR}/v1/sys/namespaces/" | jq .data.keys | sed 's/[],[]//g' `) # Get the namespace list under / in a sanitised bash array
 
 # Root namespace is weired... threfore handling it separately and not as part of the array
