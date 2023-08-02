@@ -6,7 +6,7 @@ function find_groups() {
 
     # List Groups by Name
     # https://www.vaultproject.io/api-docs/secret/identity/group#list-groups-by-name
-    groups=$(curl -s -XLIST --header "X-Vault-Namespace: ${1}" \
+    groups=$(curl ${VAULT_SKIP_VERIFY:+-k} -s -XLIST --header "X-Vault-Namespace: ${1}" \
                             --header "X-Vault-Token: ${VAULT_TOKEN}" \
                             ${VAULT_ADDR}/v1/identity/group/name \
                             | jq -r '.data.keys')
@@ -23,7 +23,7 @@ function find_groups() {
     for g in $(echo ${groups[@]} | jq -r '.[]')
     do
       echo "    - name: $g"
-      group=$(curl -s --header "X-Vault-Namespace: ${1}" \
+      group=$(curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Namespace: ${1}" \
                       --header "X-Vault-Token: ${VAULT_TOKEN}" \
                       ${VAULT_ADDR}/v1/identity/group/name/$g \
                       | jq -r '.data')
@@ -48,7 +48,7 @@ function find_groups() {
 function go_one_ns_deeper() {
 for ns in "$1"
 do
-  namespaces_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+  namespaces_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
                             --header "X-Vault-Namespace: ${2}" -X LIST \
                             "${VAULT_ADDR}/v1/sys/namespaces/" | \
                             jq -r '.data.keys' | sed 's/[],[]//g'` )
@@ -88,7 +88,7 @@ then
   exit -1
 fi
 
-root_namespace_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
+root_namespace_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
   "${VAULT_ADDR}/v1/sys/namespaces/" | jq .data.keys | sed 's/[],[]//g' `) # Get the namespace list under / in a sanitised bash array
 
 for ns in "${root_namespace_arr[@]}"

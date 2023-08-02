@@ -5,7 +5,7 @@ function find_entity_aliases() {
     echo "- namespace: ${1}"
 
     # List Entity Alias by ID
-    entity_aliases=$(curl -s -XLIST --header "X-Vault-Namespace: ${1}" \
+    entity_aliases=$(curl ${VAULT_SKIP_VERIFY:+-k} -s -XLIST --header "X-Vault-Namespace: ${1}" \
                             --header "X-Vault-Token: ${VAULT_TOKEN}" \
                             ${VAULT_ADDR}/v1/identity/entity-alias/id \
                             | jq -r '.data.keys')
@@ -22,7 +22,7 @@ function find_entity_aliases() {
     for e in $(echo ${entity_aliases[@]} | jq -r '.[]')
     do
       echo "    - id: $e"
-      alias=$(curl -s --header "X-Vault-Namespace: ${1}" \
+      alias=$(curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Namespace: ${1}" \
                       --header "X-Vault-Token: ${VAULT_TOKEN}" \
                       ${VAULT_ADDR}/v1/identity/entity-alias/id/$e \
                       | jq -r '.data')
@@ -41,7 +41,7 @@ function find_entity_aliases() {
 function go_one_ns_deeper() {
 for ns in "$1"
 do
-  namespaces_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
+  namespaces_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" \
                             --header "X-Vault-Namespace: ${2}" -X LIST \
                             "${VAULT_ADDR}/v1/sys/namespaces/" | \
                             jq -r '.data.keys' | sed 's/[],[]//g'` )
@@ -81,7 +81,7 @@ then
   exit -1
 fi
 
-root_namespace_arr=( `curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
+root_namespace_arr=( `curl ${VAULT_SKIP_VERIFY:+-k} -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X LIST \
   "${VAULT_ADDR}/v1/sys/namespaces/" | jq .data.keys | sed 's/[],[]//g' `) # Get the namespace list under / in a sanitised bash array
 
 for ns in "${root_namespace_arr[@]}"
